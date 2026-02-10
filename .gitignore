@@ -1,0 +1,12 @@
+# Compiled Java bytecode
+*.class
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor junk
+*.swp
+*.swo
+.idea/
+.vscode/
