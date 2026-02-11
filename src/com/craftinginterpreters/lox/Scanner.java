@@ -78,6 +78,9 @@ class Scanner {
         if (match('/')) {
           // A comment goes until the end of the line.
           while (peek() != '\n' && !isAtEnd()) advance();
+		} else if (match('*')) {
+		  //Multiline comments continue until the number of comment ends equals the number of comment starts (to support nesting)
+		  multilineComment();
         } else {
           addToken(SLASH);
         }
@@ -102,6 +105,28 @@ class Scanner {
         }
         break;
     }
+  }
+	
+  private void multilineComment(){
+	int nestingLevel = 1;
+	//Multiline comments continue until the number of comment ends equals the number of comment starts (to support nesting)
+	while(nestingLevel > 0 && !isAtEnd()){
+		char c = advance();
+		switch (c) {
+			case '*':
+				if (match('/')){
+					nestingLevel--;
+				}
+				break;
+			case '/':
+				if (match('*')){
+					nestingLevel++;
+				}
+				break;
+			default:
+				break;
+		}
+	}
   }
 	
   private void identifier() {
