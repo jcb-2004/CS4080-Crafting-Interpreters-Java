@@ -82,22 +82,33 @@ class Interpreter implements Expr.Visitor<Object> {
         checkNumberOperands(expr.operator, left, right);
         return (double)left - (double)right;
       case SLASH:
+		//Chapter 7 Challenge 3: Throwing a runtime error on division by zero
+		if ((double)right == 0){
+			throw new RuntimeError(expr.operator, "Division by zero");	
+		}
         checkNumberOperands(expr.operator, left, right);
         return (double)left / (double)right;
       case STAR:
         checkNumberOperands(expr.operator, left, right);
         return (double)left * (double)right;
       case PLUS:
+		//Chapter 7 Challenge 2:
+		//if both + operands are Double, do math/add them
+		//else if both + operands are Strings, concatenate
+		//else if one + operand is String and the other is Double, cast Double to String and concatenate
+		//else throw RuntimeError for invalid operands for + operator
         if (left instanceof Double && right instanceof Double) {
           return (double)left + (double)right;
-        } 
-
-        if (left instanceof String && right instanceof String) {
+        } else if (left instanceof String && right instanceof String) {
           return (String)left + (String)right;
-        }
+        } else if (left instanceof String && right instanceof Double) {
+		  return (String)left + String.valueOf((double)right);
+		} else if (left instanceof Double && right instanceof String) {
+		  return String.valueOf((double)left) + (String) right;
+		}
 
         throw new RuntimeError(expr.operator,
-            "Operands must be two numbers or two strings.");
+            "Invalid operands for + operator");
       case GREATER:
         checkNumberOperands(expr.operator, left, right);
         return (double)left > (double)right;
