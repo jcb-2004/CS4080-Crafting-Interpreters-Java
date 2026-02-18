@@ -23,9 +23,33 @@ class Parser {
     }
   }
 
-	
   private Expr expression() {
-    return equality();
+	return comma();
+    //return equality(); - commented out beacuse we are using comma() now for Chapter 6 Challenge 1 but retained for reference.
+  }
+
+//Chapter 6 Challenge 2: Ternary Operator
+  private Expr conditional() {
+    Expr expr = equality();
+    if (match(QUESTION)) {
+        Expr ifBranch = expression();
+        consume(COLON, "Expect ':' after expression.");
+        Expr elseBranch = conditional();
+        expr = new Expr.Ternary(expr, ifBranch, elseBranch);
+    }
+    return expr;
+	}
+
+//Chapter 6 Challenge 1: Comma expression
+  private Expr comma(){
+	//Expr expr = equality();
+	Expr expr = conditional(); //Chapter 6 Challenge 2: Ternary Operator
+	while(match(COMMA)){
+		Token operator = previous();
+		Expr right = equality();
+		expr = new Expr.Binary(expr, operator, right);
+	}
+	return expr;
   }
 
   private Expr equality() {
@@ -100,6 +124,13 @@ class Parser {
       consume(RIGHT_PAREN, "Expect ')' after expression.");
       return new Expr.Grouping(expr);
     }
+	  
+	//Chapter 6 Challenge 3: Handling binary operators with no left operand.
+	if (match(PLUS, MINUS, STAR, SLASH, BANG_EQUAL, EQUAL_EQUAL, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)){
+	  error(previous(), "Expect left-hand operand.");
+	  term(); //Since we call term(), it will parse the right operand with correct precedence since the correct match() methods calls and loop logic are already set up.
+	  return null;
+	}
 	  
     throw error(peek(), "Expect expression.");
   }

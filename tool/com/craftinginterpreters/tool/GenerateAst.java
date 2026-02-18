@@ -12,7 +12,9 @@ public class GenerateAst {
       System.exit(64);
     }
     String outputDir = args[0];
+	//Chapter 6 Challenge 2: Ternary Operator
     defineAst(outputDir, "Expr", Arrays.asList(
+	  "Ternary : Expr condition, Expr ifBranch, Expr elseBranch",
       "Binary   : Expr left, Token operator, Expr right",
       "Grouping : Expr expression",
       "Literal  : Object value",

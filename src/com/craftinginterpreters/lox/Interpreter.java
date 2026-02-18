@@ -2,6 +2,19 @@ package com.craftinginterpreters.lox;
 
 class Interpreter implements Expr.Visitor<Object> {
 	
+//Chapter 6 Challenge 2: Ternary Operator
+  @Override
+  public Object visitTernaryExpr(Expr.Ternary expr) {
+    Object condition = evaluate(expr.condition);
+
+    if (isTruthy(condition)) {
+        return evaluate(expr.ifBranch);
+    } else {
+        return evaluate(expr.elseBranch);
+    }
+  }
+
+	
   @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
     return expr.value;
@@ -112,6 +125,10 @@ class Interpreter implements Expr.Visitor<Object> {
         return (double)left <= (double)right;
       case BANG_EQUAL: return !isEqual(left, right);
       case EQUAL_EQUAL: return isEqual(left, right);
+	  case COMMA:
+		//Chapter 6 Challenge 1: Comma expression
+		evaluate(expr.left);
+		return evaluate(expr.right);
     }
 
     // Unreachable.
