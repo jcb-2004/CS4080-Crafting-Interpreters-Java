@@ -6,6 +6,8 @@ class Interpreter implements Expr.Visitor<Object>,
                              Stmt.Visitor<Void> {
 								 
   private Environment environment = new Environment();
+								
+  private static class BreakException extends RuntimeException {} //Chapter 9 Challenge 3
 	
   @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
@@ -153,14 +155,25 @@ class Interpreter implements Expr.Visitor<Object>,
     environment.define(stmt.name.lexeme, value);
     return null;
   }
-								 
+
+//Chapter 9 Challenge 3
   @Override
   public Void visitWhileStmt(Stmt.While stmt) {
-    while (isTruthy(evaluate(stmt.condition))) {
-      execute(stmt.body);
-    }
-    return null;
+	try {
+      while (isTruthy(evaluate(stmt.condition))) {
+		execute(stmt.body);
+	  }
+	} catch (BreakException ex) {
+		// Do nothing.
+	}
+	  return null;
   }
+								 
+//Chapter 9 Challenge 3
+	@Override
+	public Void visitBreakStmt(Stmt.Break stmt){
+		throw new BreakException();
+	}
 								 
   @Override
   public Object visitAssignExpr(Expr.Assign expr) {

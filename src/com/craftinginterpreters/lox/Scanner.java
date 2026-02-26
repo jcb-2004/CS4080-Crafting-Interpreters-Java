@@ -18,6 +18,7 @@ class Scanner {
   static {
     keywords = new HashMap<>();
     keywords.put("and",    AND);
+	keywords.put("break",  BREAK); //Chapter 9 Challenge 3
     keywords.put("class",  CLASS);
     keywords.put("else",   ELSE);
     keywords.put("false",  FALSE);

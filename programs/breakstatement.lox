@@ -1,0 +1,5 @@
+print("Starting infinite while loop...");
+while(true){
+	break;
+}
+print("Infinite while loop broken!");
