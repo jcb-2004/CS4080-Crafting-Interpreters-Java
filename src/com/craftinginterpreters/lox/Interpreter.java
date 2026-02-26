@@ -233,4 +233,15 @@ class Interpreter implements Expr.Visitor<Object>,
       Lox.runtimeError(error);
     }
   }
+				
+//Chapter 8 Challenge 1
+	String interpret(Expr expression) {
+	  try {
+		Object value = evaluate(expression);
+		return stringify(value);
+	  } catch (RuntimeError error) {
+		Lox.runtimeError(error);
+		return null;
+	  }
+	}
 }
