@@ -6,6 +6,8 @@ class Interpreter implements Expr.Visitor<Object>,
                              Stmt.Visitor<Void> {
 								 
   private Environment environment = new Environment();
+  //Chapter 8 Challenge 2
+  private static Object uninitialized = new Object();
 	
   @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
@@ -40,11 +42,18 @@ class Interpreter implements Expr.Visitor<Object>,
     // Unreachable.
     return null;
   }
-								 
+				
+  //Chapter 9 Challenge 2
   @Override
-  public Object visitVariableExpr(Expr.Variable expr) {
-    return environment.get(expr.name);
-  }
+	public Object visitVariableExpr(Expr.Variable expr) {
+	  Object value = environment.get(expr.name);
+	  if (value == uninitialized) {
+		throw new RuntimeError(expr.name,
+			"Variable must be initialized before use.");
+	  }
+
+	  return value;
+	}
 
 	
   private void checkNumberOperand(Token operator, Object operand) {
@@ -145,7 +154,7 @@ class Interpreter implements Expr.Visitor<Object>,
 								 
   @Override
   public Void visitVarStmt(Stmt.Var stmt) {
-    Object value = null;
+    Object value = uninitialized; //Chapter 9 Challenge 2
     if (stmt.initializer != null) {
       value = evaluate(stmt.initializer);
     }
