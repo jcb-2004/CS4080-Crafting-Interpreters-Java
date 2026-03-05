@@ -27,6 +27,19 @@ class Interpreter implements Expr.Visitor<Object>,
       public String toString() { return "<native fn>"; }
     });
   }
+								 
+	//Chapter 10 Challenge 2
+	@Override
+	public Void visitFunctionStmt(Stmt.Function stmt) {
+		String fnName = stmt.name.lexeme;
+		environment.define(fnName, new LoxFunction(fnName, stmt.function, environment));
+		return null;
+	}
+
+	@Override
+	public Object visitFunctionExpr(Expr.Function expr) {
+		return new LoxFunction(null, expr, environment);
+	}
 	
   @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
@@ -158,13 +171,7 @@ class Interpreter implements Expr.Visitor<Object>,
     evaluate(stmt.expression);
     return null;
   }
-								 
-  @Override
-  public Void visitFunctionStmt(Stmt.Function stmt) {
-    LoxFunction function = new LoxFunction(stmt, environment);
-    environment.define(stmt.name.lexeme, function);
-    return null;
-  }
+								
 								 
   @Override
   public Void visitIfStmt(Stmt.If stmt) {

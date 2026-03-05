@@ -26,6 +26,22 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
   }
 	
+	//Chapter 10 Challenge 2
+	@Override 
+	public Void visitFunctionExpr(Expr.Function expr) {
+		beginScope();
+
+		for (Token param : expr.params) {
+			declare(param);
+			define(param);
+		}
+
+		resolve(expr.body);
+
+		endScope();
+		return null;
+	}
+	
   @Override
   public Void visitBlockStmt(Stmt.Block stmt) {
     beginScope();
@@ -45,7 +61,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     declare(stmt.name);
     define(stmt.name);
 
-    resolveFunction(stmt, FunctionType.FUNCTION);
+    resolveFunction(stmt.function, FunctionType.FUNCTION); //Chapter 10 Challenge 2
     return null;
   }
 	
@@ -157,7 +173,8 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     stmt.accept(this);
   }
 	
-  private void resolveFunction(Stmt.Function function, FunctionType type) {
+//Chapter 10 Challenge 2
+  private void resolveFunction(Expr.Function function, FunctionType type) {
     FunctionType enclosingFunction = currentFunction;
     currentFunction = type;
 	  
