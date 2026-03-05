@@ -10,7 +10,7 @@ class Interpreter implements Expr.Visitor<Object>,
 								 
   final Environment globals = new Environment();
   private Environment environment = globals;
-  private final Map<Expr, Integer> locals = new HashMap<>();
+  private final Map<Expr, int[]> locals = new HashMap<>(); //Chapter 11 Challenge 4
 								 
   Interpreter() {
     globals.define("clock", new LoxCallable() {
@@ -64,17 +64,20 @@ class Interpreter implements Expr.Visitor<Object>,
 								 
   @Override
   public Object visitVariableExpr(Expr.Variable expr) {
-    return lookUpVariable(expr.name, expr);
+    return lookupVariable(expr.name, expr);
   }
-								 
-  private Object lookUpVariable(Token name, Expr expr) {
-    Integer distance = locals.get(expr);
-    if (distance != null) {
-      return environment.getAt(distance, name.lexeme);
-    } else {
-      return globals.get(name);
-    }
-  }
+								
+		
+	//Chapter 11 Challenge 4						 
+	private Object lookupVariable(Token name, Expr expr) {
+		int[] location = locals.get(expr);
+
+		if (location != null) {
+			return environment.getAtIndex(location[0], location[1]);
+		}
+
+		return globals.get(name);
+	}
 	
   private void checkNumberOperand(Token operator, Object operand) {
     if (operand instanceof Double) return;
@@ -128,10 +131,11 @@ class Interpreter implements Expr.Visitor<Object>,
   private void execute(Stmt stmt) {
     stmt.accept(this);
   }
-								 
-  void resolve(Expr expr, int depth) {
-    locals.put(expr, depth);
-  }
+					
+//Chapter 11 Challenge 4
+	void resolve(Expr expr, int depth, int index) {
+		locals.put(expr, new int[]{depth, index});
+	}
 								 
   void executeBlock(List<Stmt> statements,
                     Environment environment) {
@@ -210,19 +214,20 @@ class Interpreter implements Expr.Visitor<Object>,
     return null;
   }
 								 
-  @Override
-  public Object visitAssignExpr(Expr.Assign expr) {
-    Object value = evaluate(expr.value);
-	  
-    Integer distance = locals.get(expr);
-    if (distance != null) {
-      environment.assignAt(distance, expr.name, value);
-    } else {
-      globals.assign(expr.name, value);
-    }
-	  
-    return value;
-  }
+  //Chapter 11 Challenge 4
+	@Override
+	public Object visitAssignExpr(Expr.Assign expr) {
+		Object value = evaluate(expr.value);
+
+		int[] location = locals.get(expr);
+		if (location != null) {
+			environment.assignAtIndex(location[0], location[1], value);
+		} else {
+			globals.assign(expr.name, value);
+		}
+
+		return value;
+	}
 
   @Override
   public Object visitBinaryExpr(Expr.Binary expr) {

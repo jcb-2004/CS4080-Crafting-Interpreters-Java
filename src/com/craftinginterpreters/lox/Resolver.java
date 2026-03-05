@@ -8,6 +8,7 @@ import java.util.Stack;
 class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   private final Interpreter interpreter;
   private final Stack<Map<String, Variable>> scopes = new Stack<>(); //Chapter 11 Challenge 3
+  private final Stack<Integer> scopeNextIndex = new Stack<>(); //Chapter 11 Challenge 4
   private FunctionType currentFunction = FunctionType.NONE;
 	
 	//Chapter 11 Challenge 3
@@ -21,10 +22,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   private static class Variable {
     final Token name;
     VariableState state;
+	final int index; //Chapter 11 Challenge 4
 
-    private Variable(Token name, VariableState state) {
+    private Variable(Token name, VariableState state, int index) {
       this.name = name;
       this.state = state;
+	  this.index = index;
     }
   }
 
@@ -198,10 +201,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   private void beginScope() {
 	  //Chapter 11 Challenge 3
     scopes.push(new HashMap<String, Variable>());
+	scopeNextIndex.push(0); //Chapter 11 Challenge 4
   }
 
 	//Chapter 11 Challenge 3
   private void endScope() {
+	scopeNextIndex.pop(); //Chapter 11 Challenge 4
     Map<String, Variable> scope = scopes.pop();
 
     for (Map.Entry<String, Variable> entry : scope.entrySet()) {
@@ -214,14 +219,18 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 //Chapter 11 Challenge 3
   private void declare(Token name) {
     if (scopes.isEmpty()) return;
+	  
+	//Chapter 11 Challenge 4
+	int index = scopeNextIndex.peek();
+	scopeNextIndex.set(scopeNextIndex.size() - 1, index + 1);
 
-    Map<String, Variable> scope = scopes.peek();
-    if (scope.containsKey(name.lexeme)) {
+    if (scopes.peek().containsKey(name.lexeme)) {
       Lox.error(name,
           "Already variable with this name in this scope.");
     }
-
-    scope.put(name.lexeme, new Variable(name, VariableState.DECLARED));
+	  
+	//Chapter 11 Challenge 4
+	scopes.peek().put(name.lexeme, new Variable(name, VariableState.DECLARED, index));
   }
 	
 //Chapter 11 Challenge 3
@@ -234,7 +243,9 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   private void resolveLocal(Expr expr, Token name, boolean isRead) {
     for (int i = scopes.size() - 1; i >= 0; i--) {
       if (scopes.get(i).containsKey(name.lexeme)) {
-        interpreter.resolve(expr, scopes.size() - 1 - i);
+		//Chapter 11 Challenge 4
+		Variable variable = scopes.get(i).get(name.lexeme);
+        interpreter.resolve(expr, scopes.size() - 1 - i, variable.index);
         if (isRead) {
           scopes.get(i).get(name.lexeme).state = VariableState.READ;
         }

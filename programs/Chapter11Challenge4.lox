@@ -1,0 +1,12 @@
+var a = 1;
+
+{
+  var b = 2;
+  print a;
+  print b;
+}
+
+//Tests that global and local variables still work
+//Expected result:
+//1
+//2

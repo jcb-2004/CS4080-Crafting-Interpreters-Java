@@ -1,11 +1,14 @@
 package com.craftinginterpreters.lox;
 
+import java.util.ArrayList; //Chapter 11 Challenge 4
 import java.util.HashMap;
+import java.util.List; //Chapter 11 Challenge 4
 import java.util.Map;
 
 class Environment {
   final Environment enclosing;
   private final Map<String, Object> values = new HashMap<>();
+  private final List<Object> slots = new ArrayList<>(); //Chapter 11 Challenge 4
 	
   Environment() {
     enclosing = null;
@@ -43,7 +46,13 @@ class Environment {
 
   void define(String name, Object value) {
     values.put(name, value);
+	slots.add(value); //Chapter 11 Challenge 4
   }
+
+	//Chapter 11 Challenge 4
+	Object getAtIndex(int distance, int index){
+		return ancestor(distance).slots.get(index);
+	}
 	
   Environment ancestor(int distance) {
     Environment environment = this;
@@ -58,7 +67,9 @@ class Environment {
     return ancestor(distance).values.get(name);
   }
 	
-  void assignAt(int distance, Token name, Object value) {
-    ancestor(distance).values.put(name.lexeme, value);
-  }
+	//Chapter 11 Challenge 4
+	void assignAtIndex(int distance, int index, Object value) {
+		ancestor(distance).slots.set(index, value);
+	}
+	
 }
