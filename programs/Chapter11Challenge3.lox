@@ -1,0 +1,5 @@
+fun test(){
+	var a = 1;
+}
+test();
+//This should throw an error because the local variable a is declared, initialized, and never used.
