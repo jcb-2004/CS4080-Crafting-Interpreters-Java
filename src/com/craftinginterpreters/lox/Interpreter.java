@@ -171,22 +171,31 @@ class Interpreter implements Expr.Visitor<Object>,
     executeBlock(stmt.statements, new Environment(environment));
     return null;
   }
-								 
-  @Override
-  public Void visitClassStmt(Stmt.Class stmt) {
-    environment.define(stmt.name.lexeme, null);
+		
+//Chapter 12 Challenge 1
+	@Override
+	public Void visitClassStmt(Stmt.Class stmt) {
+	  environment.define(stmt.name.lexeme, null);
+	  Map<String, LoxFunction> classMethods = new HashMap<>();
+	  for (Stmt.Function method : stmt.classMethods) {
+		LoxFunction function = new LoxFunction(method, environment, false);
+		classMethods.put(method.name.lexeme, function);
+	  }
 
-    Map<String, LoxFunction> methods = new HashMap<>();
-    for (Stmt.Function method : stmt.methods) {
-      LoxFunction function = new LoxFunction(method, environment,
-          method.name.lexeme.equals("init"));
-      methods.put(method.name.lexeme, function);
-    }
+	  LoxClass metaclass = new LoxClass(null,
+		  stmt.name.lexeme + " metaclass", classMethods);
 
-    LoxClass klass = new LoxClass(stmt.name.lexeme, methods);
-    environment.assign(stmt.name, klass);
-    return null;
-  }
+	  Map<String, LoxFunction> methods = new HashMap<>();
+	  for (Stmt.Function method : stmt.methods) {
+		LoxFunction function = new LoxFunction(method, environment,
+			method.name.lexeme.equals("init"));
+		methods.put(method.name.lexeme, function);
+	  }
+
+	  LoxClass klass = new LoxClass(metaclass, stmt.name.lexeme, methods);
+	  environment.assign(stmt.name, klass);
+	  return null;
+	}
 								 
   @Override
   public Void visitExpressionStmt(Stmt.Expression stmt) {

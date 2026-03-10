@@ -44,19 +44,23 @@ class Parser {
     }
   }
 	
-  private Stmt classDeclaration() {
-    Token name = consume(IDENTIFIER, "Expect class name.");
-    consume(LEFT_BRACE, "Expect '{' before class body.");
+//Chapter 12 Challenge 1
+	private Stmt classDeclaration() {
+	  Token name = consume(IDENTIFIER, "Expect class name.");
 
-    List<Stmt.Function> methods = new ArrayList<>();
-    while (!check(RIGHT_BRACE) && !isAtEnd()) {
-      methods.add(function("method"));
-    }
+	  List<Stmt.Function> methods = new ArrayList<>();
+	  List<Stmt.Function> classMethods = new ArrayList<>();
+	  consume(LEFT_BRACE, "Expect '{' before class body.");
 
-    consume(RIGHT_BRACE, "Expect '}' after class body.");
+	  while (!check(RIGHT_BRACE) && !isAtEnd()) {
+		boolean isClassMethod = match(CLASS);
+		(isClassMethod ? classMethods : methods).add(function("method"));
+	  }
 
-    return new Stmt.Class(name, methods);
-  }
+	  consume(RIGHT_BRACE, "Expect '}' after class body.");
+
+	  return new Stmt.Class(name, methods, classMethods);
+	}
 	
   private Stmt statement() {
     if (match(FOR)) return forStatement();
