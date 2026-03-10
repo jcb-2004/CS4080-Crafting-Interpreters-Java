@@ -43,6 +43,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     return null;
   }
 	
+  //Chapter 13 Challenge 1
   @Override
   public Void visitClassStmt(Stmt.Class stmt) {
     ClassType enclosingClass = currentClass;
@@ -51,18 +52,24 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     declare(stmt.name);
     define(stmt.name);
 	  
-    if (stmt.superclass != null &&
-        stmt.name.lexeme.equals(stmt.superclass.name.lexeme)) {
-      Lox.error(stmt.superclass.name,
-          "A class can't inherit from itself.");
-    }
+	//Chapter 13 Challenge 1
+	for (Expr.Variable superclass : stmt.superclasses) {
+		if (stmt.name.lexeme.equals(superclass.name.lexeme)) {
+			Lox.error(superclass.name,
+				"A class can't inherit from itself.");
+		}
+	}
 	  
-    if (stmt.superclass != null) {
+	//Chapter 13 Challenge 1
+    if (!stmt.superclasses.isEmpty()) {
       currentClass = ClassType.SUBCLASS;
-      resolve(stmt.superclass);
+	  for (Expr.Variable superclass : stmt.superclasses){
+		  resolve(superclass);
+	  }
     }
 	  
-    if (stmt.superclass != null) {
+	//Chapter 13 Challenge 1
+    if (!stmt.superclasses.isEmpty()) {
       beginScope();
       scopes.peek().put("super", true);
     }
@@ -80,7 +87,8 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	  
     endScope();
 	  
-    if (stmt.superclass != null) endScope();
+	//Chapter 13 Challenge 1
+    if (!stmt.superclasses.isEmpty()) endScope();
 	  
     currentClass = enclosingClass;
     return null;

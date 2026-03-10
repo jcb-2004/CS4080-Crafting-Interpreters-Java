@@ -193,21 +193,27 @@ class Interpreter implements Expr.Visitor<Object>,
 								 
   @Override
   public Void visitClassStmt(Stmt.Class stmt) {
-    Object superclass = null;
-    if (stmt.superclass != null) {
-      superclass = evaluate(stmt.superclass);
-      if (!(superclass instanceof LoxClass)) {
-        throw new RuntimeError(stmt.superclass.name,
-            "Superclass must be a class.");
-      }
-    } 
+	//Chapter 13 Challenge 1
+	List<LoxClass> superclasses = new ArrayList<>();
+
+	for (Expr.Variable superclass : stmt.superclasses) {
+		Object value = evaluate(superclass);
+
+		if (!(value instanceof LoxClass)) {
+			throw new RuntimeError(superclass.name,
+				"Superclass must be a class.");
+		}
+
+		superclasses.add((LoxClass)value);
+	}
 	  
     environment.define(stmt.name.lexeme, null);
 	  
-    if (stmt.superclass != null) {
-      environment = new Environment(environment);
-      environment.define("super", superclass);
-    }
+	//Chapter 13 Challenge 1
+	if (!superclasses.isEmpty()) {
+		environment = new Environment(environment);
+		environment.define("super", superclasses);
+	}
 
     Map<String, LoxFunction> methods = new HashMap<>();
     for (Stmt.Function method : stmt.methods) {
@@ -216,10 +222,12 @@ class Interpreter implements Expr.Visitor<Object>,
       methods.put(method.name.lexeme, function);
     }
 
-    LoxClass klass = new LoxClass(stmt.name.lexeme,
-        (LoxClass)superclass, methods);
+	//Chapter 13 Challenge 1
+	LoxClass klass = new LoxClass(stmt.name.lexeme,
+		superclasses, methods);
 	  
-    if (superclass != null) {
+	//Chapter 13 Challenge 1
+    if (!superclasses.isEmpty()) {
       environment = environment.enclosing;
     }
 	  
