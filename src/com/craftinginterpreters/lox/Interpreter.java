@@ -26,6 +26,48 @@ class Interpreter implements Expr.Visitor<Object>,
       @Override
       public String toString() { return "<native fn>"; }
     });
+	//Chapter 13 Challenge 3
+	globals.define("sine", new LoxCallable() {
+      @Override
+      public int arity() { return 1; }
+
+      @Override
+      public Object call(Interpreter interpreter,
+                         List<Object> arguments) {
+        return Math.sin((Double)arguments.get(0));
+      }
+
+      @Override
+      public String toString() { return "<native fn>"; }
+    });
+	//Chapter 13 Challenge 3
+	globals.define("cosine", new LoxCallable() {
+      @Override
+      public int arity() { return 1; }
+
+      @Override
+      public Object call(Interpreter interpreter,
+                         List<Object> arguments) {
+        return Math.cos((Double)arguments.get(0));
+      }
+
+      @Override
+      public String toString() { return "<native fn>"; }
+    });
+	//Chapter 13 Challenge 3
+	globals.define("tangent", new LoxCallable() {
+      @Override
+      public int arity() { return 1; }
+
+      @Override
+      public Object call(Interpreter interpreter,
+                         List<Object> arguments) {
+        return Math.tan((Double)arguments.get(0));
+      }
+
+      @Override
+      public String toString() { return "<native fn>"; }
+    });
   }
 	
   @Override

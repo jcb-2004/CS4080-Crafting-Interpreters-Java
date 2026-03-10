@@ -1,0 +1,19 @@
+print("sine, cosine, and tangent of 0 radians:");
+print(sine(0));
+print(cosine(0));
+print(tangent(0));
+
+//Expected output:
+//0
+//1
+//0
+
+print("sine, cosine, and tangent of 1 radian:");
+print(sine(1));
+print(cosine(1));
+print(tangent(1));
+
+//Expected output:
+//0.841
+//0.540
+//1.557
