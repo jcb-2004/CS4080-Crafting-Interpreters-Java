@@ -227,19 +227,24 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     stmt.accept(this);
   }
 	
-  private void resolveFunction(Stmt.Function function, FunctionType type) {
-    FunctionType enclosingFunction = currentFunction;
-    currentFunction = type;
-	  
-    beginScope();
-    for (Token param : function.params) {
-      declare(param);
-      define(param);
-    }
-    resolve(function.body);
-    endScope();
-    currentFunction = enclosingFunction;
-  }
+	//Chapter 12 Challenge 2
+	private void resolveFunction(Stmt.Function function, FunctionType type) {
+		FunctionType enclosingFunction = currentFunction;
+		currentFunction = type;
+
+		beginScope();
+
+		if (function.params != null) {
+			for (Token param : function.params) {
+				declare(param);
+				define(param);
+			}
+		}
+
+		resolve(function.body);
+		endScope();
+		currentFunction = enclosingFunction;
+	}
 
   private void resolve(Expr expr) {
     expr.accept(this);

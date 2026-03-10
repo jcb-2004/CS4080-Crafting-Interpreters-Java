@@ -32,24 +32,31 @@ class LoxFunction implements LoxCallable {
     return declaration.params.size();
   }
 
-  @Override
-  public Object call(Interpreter interpreter,
-                     List<Object> arguments) {
-    Environment environment = new Environment(closure);
-    for (int i = 0; i < declaration.params.size(); i++) {
-      environment.define(declaration.params.get(i).lexeme,
-          arguments.get(i));
-    }
+	//Chapter 12 Challenge 2
+	@Override
+	public Object call(Interpreter interpreter, List<Object> arguments) {
+		Environment environment = new Environment(closure);
 
-    try {
-      interpreter.executeBlock(declaration.body, environment);
-    } catch (Return returnValue) {
-      if (isInitializer) return closure.getAt(0, "this");
-      return returnValue.value;
-    }
-	  
-    if (isInitializer) return closure.getAt(0, "this");
-    return null;
-  }
+		if (declaration.params != null) {
+			for (int i = 0; i < declaration.params.size(); i++) {
+				environment.define(declaration.params.get(i).lexeme,
+								   arguments.get(i));
+			}
+		}
 
+		try {
+			interpreter.executeBlock(declaration.body, environment);
+		} catch (Return returnValue) {
+			if (isInitializer) return closure.getAt(0, "this");
+			return returnValue.value;
+		}
+
+		if (isInitializer) return closure.getAt(0, "this");
+		return null;
+	}
+	
+	//Chapter 12 Challenge 2
+	public boolean isGetter(){
+		return declaration.params == null;	
+	}
 }

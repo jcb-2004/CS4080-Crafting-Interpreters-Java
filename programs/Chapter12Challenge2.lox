@@ -1,0 +1,21 @@
+class Circle {
+    init(radius) {
+        this.radius = radius;
+    }
+
+    area {
+        return 3.141592653 * this.radius * this.radius;
+    }
+
+    circumference {
+        return 2 * 3.141592653 * this.radius;
+    }
+}
+
+var circle = Circle(4);
+print circle.area;
+print circle.circumference;
+
+//Expected result:
+//about 50.2655
+//about 25.1327
