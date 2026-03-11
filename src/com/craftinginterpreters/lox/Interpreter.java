@@ -11,6 +11,9 @@ class Interpreter implements Expr.Visitor<Object>,
   final Environment globals = new Environment();
   private Environment environment = globals;
   private final Map<Expr, Integer> locals = new HashMap<>();
+			
+  //Chapter 13 Challenge 2
+  private final java.util.Deque<LoxCallable> innerStack = new java.util.ArrayDeque<>();
 								 
   Interpreter() {
     globals.define("clock", new LoxCallable() {
@@ -27,6 +30,33 @@ class Interpreter implements Expr.Visitor<Object>,
       public String toString() { return "<native fn>"; }
     });
   }
+							
+	//Chapter 13 Challenge 2
+	void pushInner(LoxCallable inner) { 
+		innerStack.push(inner); 
+	}
+
+	void popInner() { 
+		innerStack.pop(); 
+	}
+			
+	//Chapter 13 Challenge 2
+	@Override
+	public Object visitInnerExpr(Expr.Inner expr) {
+		if (innerStack.isEmpty()) {
+			return new LoxCallable() {
+				@Override public int arity() { return 0; }
+
+				@Override public Object call(Interpreter interpreter, java.util.List<Object> arguments) {
+					return null;
+				}
+
+				@Override public String toString() { return "<inner-noop>"; }
+			};
+		}
+
+		return innerStack.peek();
+	}
 	
   @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
@@ -60,24 +90,7 @@ class Interpreter implements Expr.Visitor<Object>,
     return value;
   }
 								 
-  @Override
-  public Object visitSuperExpr(Expr.Super expr) {
-    int distance = locals.get(expr);
-    LoxClass superclass = (LoxClass)environment.getAt(
-        distance, "super");
-	  
-    LoxInstance object = (LoxInstance)environment.getAt(
-        distance - 1, "this");
-	  
-    LoxFunction method = superclass.findMethod(expr.method.lexeme);
-	  
-    if (method == null) {
-      throw new RuntimeError(expr.method,
-          "Undefined property '" + expr.method.lexeme + "'.");
-    }
-	  
-    return method.bind(object);
-  }
+//Chapter 13 Challenge 2 - remove visitSuperExpr()
 								 
   @Override
   public Object visitThisExpr(Expr.This expr) {

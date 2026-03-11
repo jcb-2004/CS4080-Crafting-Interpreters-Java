@@ -15,8 +15,9 @@ enum TokenType {
   IDENTIFIER, STRING, NUMBER,
 
   // Keywords.
+  //Chapter 13 Challenge 2
   AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
-  PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
+  PRINT, RETURN, SUPER, INNER, THIS, TRUE, VAR, WHILE,
 
   EOF
 }

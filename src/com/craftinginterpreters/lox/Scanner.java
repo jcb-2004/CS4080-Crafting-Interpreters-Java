@@ -33,6 +33,7 @@ class Scanner {
     keywords.put("true",   TRUE);
     keywords.put("var",    VAR);
     keywords.put("while",  WHILE);
+    keywords.put("inner",  INNER); //Chapter 13 Challenge 2
   }
 
   Scanner(String source) {
